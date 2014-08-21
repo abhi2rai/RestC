@@ -1,0 +1,77 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    tools:context="com.abc.restc.MainActivity" >
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:weightSum="1">
+ 
+        <TextView
+            android:id="@+id/search_by"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" 
+            android:layout_weight="0.5"
+            android:text="@string/search"
+            android:gravity="center" />
+        <Spinner
+		    android:id="@+id/option_spinner"
+		    android:layout_height="match_parent"
+		    android:textAppearance="?android:attr/textAppearanceMedium"
+		    android:entries="@array/search_options"
+            android:layout_width="0dp"
+            android:layout_weight="0.5" />
+	</TableRow>
+	
+    <EditText
+        android:id="@+id/inputtext"
+        android:layout_width="250dp"
+        android:paddingTop="32dp"
+        android:hint="@string/input_hint"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textSize="20sp"
+		android:inputType="text"
+        android:layout_height="wrap_content"/>
+    
+    <Button android:id="@+id/search_button"
+        android:layout_width="176dp"
+		android:layout_height="60dp"
+		android:background="@drawable/selector_button"
+        android:layout_gravity="center"
+        android:textColor="#7AA42F"
+		android:textSize="30sp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="32dp"
+        android:onClick="searchCountry"
+        android:hapticFeedbackEnabled="true"
+        android:text="@string/search_button" />
+    
+    <ScrollView
+        android:layout_width="match_parent"
+    	android:layout_height="wrap_content" >
+        <LinearLayout
+        	android:id="@+id/result_list"
+        	android:orientation="vertical"
+        	android:layout_width="match_parent"
+    		android:layout_height="wrap_content"  >
+<!--     		<com.abc.restc.ListTemplate
+            android:id="@+id/list_item_one"
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+        /> -->
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
