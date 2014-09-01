@@ -6,7 +6,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,30 +22,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends UIConfig {
 
 	private Spinner searchBy;
 	private ProgressDialog progress;
@@ -54,26 +56,56 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         populateMap();
+        if(android.os.Build.VERSION.SDK_INT == 19){
+        	setStatusBarColor("#673ab7");
+        }
+        setIfBlank();
+        Spinner options = (Spinner) findViewById(R.id.option_spinner);
+        ArrayAdapter<CharSequence> optionAdapter = ArrayAdapter.createFromResource(
+                    this, R.array.search_options, R.layout.spinner_layout);
+        optionAdapter.setDropDownViewResource(R.layout.spinner_layout);
+        options.setAdapter(optionAdapter);
+        Typeface fontLight = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Light.ttf");
+        Typeface fontReg = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Regular.ttf");
+        
+        setActionBarFont(fontReg,25);
+        
+        EditText input = (EditText) findViewById(R.id.inputtext);
+        input.setTypeface(fontLight);
+        
+        Button search = (Button) findViewById(R.id.search_button);
+        search.setTypeface(fontReg);
+        
     }
 	
 	private void populateMap(){
 		dict.put("Name", "name/");
 		dict.put("Capital", "capital/");
-		dict.put("Country Code", "alpha/");
 		dict.put("Calling Code", "callingcode/");
 		dict.put("Currency", "currency/");
-		dict.put("Language", "lang/");
 		dict.put("Region", "region/");
 		dict.put("Subregion", "subregion/");
 	}
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+	
+    private void setIfBlank(){
+    	Typeface fontLight = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Light.ttf");
+    	TextView txt = new TextView(getApplicationContext());
+        String str = "<p>Choose from the options mentioned below to search for a country or group of countries. And then tap on a " +
+        		"country to get more info:</p>" +
+        		"&#8226; Name : Eg. - united, island<br/>" +
+        		"&#8226; Capital : Eg. - berlin,paris<br/>" +
+        		"&#8226; Calling Code : Eg. - 1, 91<br/>" +
+        		"&#8226; Currency : Eg. - eur, usd<br/>" +
+        		"&#8226; Region : Eg. - asia, africa<br/>" +
+        		"&#8226; Subregion : Eg. - polynesia, western europe<br/>";
+        txt.setText(Html.fromHtml(str));
+        txt.setGravity(Gravity.CENTER);
+        txt.setTextSize(18);
+        txt.setTypeface(fontLight);
+        txt.setTextColor(Color.DKGRAY);
+        LinearLayout layout = (LinearLayout)findViewById(R.id.result_list);
+        layout.addView(txt);
     }
-    
     public void searchCountry(View view){
     	LinearLayout layout = (LinearLayout)findViewById(R.id.result_list);
     	layout.removeAllViews();
@@ -82,7 +114,7 @@ public class MainActivity extends Activity {
     		EditText myEditText = (EditText) findViewById(R.id.inputtext);
         	hideKeyboard(myEditText);
         	progress = new ProgressDialog(this);
-        	progress.setMessage("Yodafying....");
+        	progress.setMessage("Searching....");
         	progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         	progress.setIndeterminate(true);
         	progress.show();
@@ -93,6 +125,7 @@ public class MainActivity extends Activity {
         	if(myEditText.getText().toString().equals("")){
         		progress.hide();
         		hideKeyboard((EditText) findViewById(R.id.inputtext));
+        		setIfBlank();
     			showToast("Please enter some text");
         	}
         	else{
@@ -101,6 +134,7 @@ public class MainActivity extends Activity {
         }
 		else{
 			hideKeyboard((EditText) findViewById(R.id.inputtext));
+			setIfBlank();
 			showToast("You need to be connected");
 		}
     }
@@ -117,40 +151,141 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
     
-    private void showToast(String input){
-    	Context context = getApplicationContext();
-		CharSequence text = input;
-		int duration = Toast.LENGTH_LONG;
-		Toast toast = Toast.makeText(context, text, duration);
-		toast.show();
-    }
-    
-    private boolean isConnected(){
-    	ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
-    	    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-    	    if (networkInfo != null && networkInfo.isConnected()) 
-    	    	return true;
-    	    else
-    	    	return false;	
-    }
-    
-    private void hideKeyboard(EditText myEditText){
-    	InputMethodManager imm = (InputMethodManager)getSystemService(
-      	      Context.INPUT_METHOD_SERVICE);
-      	imm.hideSoftInputFromWindow(myEditText.getWindowToken(), 0);
-    }
+    public class MyOnClickListener implements OnClickListener
+    {
+
+    	String country;
+      public MyOnClickListener(String country) {
+           this.country = country;
+      }
+
+      @Override
+      public void onClick(View v)
+      {
+    	  Intent i = new Intent(getApplicationContext(), Details.class);
+	    	i.putExtra("country",country);
+	    	startActivity(i);
+    	  //read your lovely variable
+      }
+
+   };
     
     class RetrieveFeedTask extends AsyncTask<String, Void, String> {
 
         String result="";
     	InputStream inputStream = null;
-		private Exception exception;
-
+		
+		private void setupDB(JSONObject jsonObject){
+			try {
+				String name = String.valueOf(ifNull(jsonObject.getString("name")));
+				String capital = String.valueOf(ifNull(jsonObject.getString("capital")));
+				String region = String.valueOf(ifNull(jsonObject.getString("region")));
+				String subregion = String.valueOf(ifNull(jsonObject.getString("subregion")));
+				double population = Double.parseDouble(ifNull(jsonObject.getString("population")));
+				JSONArray latlng = jsonObject.getJSONArray("latlng");
+				double lat = latlng.getDouble(0);
+				double lng = latlng.getDouble(1);
+				double area = Double.parseDouble(ifNull(jsonObject.getString("area")));
+				String timezones="";
+				if(!jsonObject.isNull("timezones")){
+					JSONArray timez = jsonObject.getJSONArray("timezones");
+					for(int i = 0 ; i < timez.length();i++){
+						if(i == timez.length()-1){
+							timezones += timez.getString(i);
+						}
+						else{
+							timezones += timez.getString(i) + ",";
+						}
+					}
+				}
+				else{
+					timezones = "N/A";
+				}
+				
+				String borders="";
+				if(!jsonObject.isNull("borders")){
+					JSONArray bord = jsonObject.getJSONArray("borders");
+					for(int i = 0 ; i < bord.length();i++){
+						if(i == bord.length()-1){
+							borders += new Locale("", bord.getString(i)).getDisplayCountry();
+						}
+						else{
+							borders += new Locale("", bord.getString(i)).getDisplayCountry() + ",";
+						}
+					}
+				}
+				else{
+					borders = "N/A";
+				}
+				
+				String callingCodes="";
+				if(!jsonObject.isNull("callingCodes")){
+					JSONArray callingC= jsonObject.getJSONArray("callingCodes");
+					for(int i = 0 ; i < callingC.length();i++){
+						if(i == callingC.length()-1){
+							callingCodes += callingC.getString(i);
+						}
+						else{
+							callingCodes += callingC.getString(i) + ",";
+						}
+					}
+				}
+				String currencies="";
+				if(!jsonObject.isNull("currencies")){
+					JSONArray currency= jsonObject.getJSONArray("currencies");
+					for(int i = 0 ; i < currency.length();i++){
+						if(i == currency.length()-1){
+							currencies += currency.getString(i);
+						}
+						else{
+							currencies += currency.getString(i) + ",";
+						}
+					}
+				}
+				String languages="";
+				if(!jsonObject.isNull("currencies")){
+					JSONArray lang= jsonObject.getJSONArray("languages");
+					for(int i = 0 ; i < lang.length();i++){
+						if(i == lang.length()-1){
+							languages += new Locale(lang.getString(i)).getDisplayName();
+						}
+						else{
+							languages += new Locale(lang.getString(i)).getDisplayName() + ",";
+						}
+					}
+				}
+				else{
+					languages = "N/A";
+				}
+				
+				String nativeName = String.valueOf(ifNull(jsonObject.getString("nativeName")));
+				DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+				db.addCountry(new Country(name,capital,region,subregion,population,lat,
+			lng,area,timezones,borders,nativeName,callingCodes,
+			currencies,languages));
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		private String ifNull(String d){
+			if(d == "null"){
+				return "0";
+			}
+			else{
+				return d;
+			}
+		}
+		
         protected String doInBackground(String... q) {
         	StringBuilder builder = new StringBuilder();
         	try {
             	HttpClient httpclient = new DefaultHttpClient();
-    			HttpGet request = new HttpGet(URL + dict.get(String.valueOf(searchBy.getSelectedItem()))+URLEncoder.encode(q[0]));
+            	String getSelection = String.valueOf(searchBy.getSelectedItem());
+            	String encodedString = URLEncoder.encode((q[0]).replace(" ", "%20"),"UTF-8");
+    			HttpGet request = new HttpGet(URL + dict.get(getSelection)+encodedString);
     			request.addHeader("X-Mashape-Key","vaIqEmArX9mshVokSbs1RySugavkp16yAv6jsnbMp67ktpm97r");
     			// make GET request to the given URL
     			
@@ -181,32 +316,42 @@ public class MainActivity extends Activity {
         	try {
         		if(feed.equals("Not Found")){
         			progress.hide();
+        			setIfBlank();
         			showToast("Not Found");
         		}
         		else{
         			progress.hide();
+        			DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+    				db.deleteRecords();
     				JSONArray jsonArray = new JSONArray(feed);
+    				Set<String> s = new HashSet<String>();
     				for (int i = 0; i < jsonArray.length(); i++) {
     			        JSONObject jsonObject = jsonArray.getJSONObject(i);
-    			        TableRow tr1 = new TableRow(getApplicationContext());
-    			        TableLayout.LayoutParams tableRowParams=
-    		        			  new TableLayout.LayoutParams
-    		        			  (LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-    			        tableRowParams.setMargins(0, 6, 0, 0);
-    		        	tr1.setLayoutParams(tableRowParams);
-    		        	tr1.setBackgroundResource(R.drawable.selector_shapes);
-    		        	TextView beno = new TextView(getApplicationContext());
-    		            beno.setText(String.valueOf(jsonObject.getString("name")));
-    		            beno.setGravity(Gravity.CENTER);
-    		            beno.setTextColor(Color.parseColor("#000000"));
-    		            beno.setTextSize(28);
-    		            TableRow.LayoutParams col2Params = new TableRow.LayoutParams();
-    		            col2Params.height = LayoutParams.WRAP_CONTENT;
-    		            col2Params.width = LayoutParams.MATCH_PARENT;
-    		            tr1.setClickable(true);
-    		            tr1.addView(beno, col2Params);
-    		            LinearLayout layout = (LinearLayout)findViewById(R.id.result_list);
-    		            layout.addView(tr1);
+    			        if(s.add(String.valueOf(jsonObject.getString("name")))){
+    			        	setupDB(jsonObject);
+    			        	TableRow tr1 = new TableRow(getApplicationContext());
+        			        TableLayout.LayoutParams tableRowParams=
+        		        			  new TableLayout.LayoutParams
+        		        			  (LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        			        tableRowParams.setMargins(0, 6, 0, 0);
+        		        	tr1.setLayoutParams(tableRowParams);
+        		        	tr1.setBackgroundResource(R.drawable.selector_shapes);
+        		        	tr1.setOnClickListener(new MyOnClickListener(String.valueOf(jsonObject.getString("name"))));
+        		        	TextView beno = new TextView(getApplicationContext());
+        		            beno.setText(String.valueOf(jsonObject.getString("name")));
+        		            beno.setGravity(Gravity.CENTER);
+        		            beno.setTextColor(Color.parseColor("#000000"));
+        		            beno.setTextSize(28);
+        		            Typeface fontReg = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Regular.ttf");
+        		            beno.setTypeface(fontReg);
+        		            TableRow.LayoutParams col2Params = new TableRow.LayoutParams();
+        		            col2Params.height = LayoutParams.WRAP_CONTENT;
+        		            col2Params.width = LayoutParams.MATCH_PARENT;
+        		            tr1.setClickable(true);
+        		            tr1.addView(beno, col2Params);
+        		            LinearLayout layout = (LinearLayout)findViewById(R.id.result_list);
+        		            layout.addView(tr1);
+    			        }
     			      }
         		}
         		
