@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -23,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -30,15 +32,18 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -61,10 +66,16 @@ public class MainActivity extends UIConfig {
         }
         setIfBlank();
         Spinner options = (Spinner) findViewById(R.id.option_spinner);
-        ArrayAdapter<CharSequence> optionAdapter = ArrayAdapter.createFromResource(
-                    this, R.array.search_options, R.layout.spinner_layout);
-        optionAdapter.setDropDownViewResource(R.layout.spinner_layout);
-        options.setAdapter(optionAdapter);
+        ArrayList<String> subSpecialities = new ArrayList<String>();
+        subSpecialities.add("Name");
+        subSpecialities.add("Capital");
+        subSpecialities.add("Calling Code");
+        subSpecialities.add("Currency");
+        subSpecialities.add("Region");
+        subSpecialities.add("Subregion");
+        CustomAdapter adapter = new CustomAdapter(this, R.layout.spinner_layout, subSpecialities);
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        options.setAdapter(adapter);
         Typeface fontLight = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Light.ttf");
         Typeface fontReg = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Regular.ttf");
         
@@ -77,6 +88,67 @@ public class MainActivity extends UIConfig {
         search.setTypeface(fontReg);
         
     }
+	
+	@SuppressWarnings("rawtypes")
+	private class CustomAdapter extends ArrayAdapter implements SpinnerAdapter{
+
+	    Context context;
+	    int textViewResourceId;
+	    ArrayList arrayList;
+	    Typeface fontReg = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Regular.ttf");
+	    @SuppressWarnings("unchecked")
+		public CustomAdapter(Context context, int textViewResourceId,  ArrayList arrayList) {
+	        super(context, textViewResourceId, arrayList);
+
+	        this.context = context;
+	        this.textViewResourceId = textViewResourceId;
+	        this.arrayList = arrayList;
+
+	    }
+
+	    @Override
+	     public View getDropDownView(int position, View convertView, ViewGroup parent){
+	       if (convertView == null)
+	       {
+	         LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	         //convertView = vi.inflate(android.R.layout.simple_spinner_dropdown_item, null);
+	         convertView = vi.inflate(R.layout.spinner_layout, null);
+	       }
+
+	       TextView textView = (TextView) convertView.findViewById(R.id.spinnerTarget);
+	       textView.setTypeface(fontReg);
+	       for(int i = 0 ; i < arrayList.size();i++){
+	    	   if(position == i )
+	    		   textView.setText(arrayList.get(i).toString());
+	       }
+
+	       return convertView;
+	     }
+	    
+	    @Override
+	    public View getView(int position, View convertView, ViewGroup parent){
+	    	if (convertView == null)
+		       {
+		         LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		         //convertView = vi.inflate(android.R.layout.simple_spinner_dropdown_item, null);
+		         convertView = vi.inflate(R.layout.spinner_layout, null);
+		       }
+
+		       TextView textView = (TextView) convertView.findViewById(R.id.spinnerTarget);
+		       textView.setTypeface(fontReg);
+		       for(int i = 0 ; i < arrayList.size();i++){
+		    	   if(position == i )
+		    		   textView.setText(arrayList.get(i).toString());
+		       }
+		      
+
+		       return convertView;
+	    }
+
+
+
+	}
+
 	
 	private void populateMap(){
 		dict.put("Name", "name/");

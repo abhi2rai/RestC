@@ -18,14 +18,6 @@
 	<string name="callingcodes_placeholder">Calling Codes</string>
 	<string name="currencies_placeholder">Currencies</string>
 	<string name="languages_placeholder">Languages</string>
-    <string-array name="search_options">
-        <item>Name</item>
-        <item>Capital</item>
-        <item>Calling Code</item>
-        <item>Currency</item>
-        <item>Region</item>
-        <item>Subregion</item>
-    </string-array>
 
     <string name="title_activity_dialog">Dialog</string>
     <string name="title_activity_list_template">ListTemplate</string>
