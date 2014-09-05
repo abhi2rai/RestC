@@ -62,7 +62,7 @@ public class MainActivity extends UIConfig {
         setContentView(R.layout.activity_main);
         populateMap();
         if(android.os.Build.VERSION.SDK_INT == 19){
-        	setStatusBarColor("#673ab7");
+        	setStatusBarColor("#512da8");
         }
         setIfBlank();
         Spinner options = (Spinner) findViewById(R.id.option_spinner);

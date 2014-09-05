@@ -25,7 +25,7 @@ public class Details extends UIConfig {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_details);
 		if(android.os.Build.VERSION.SDK_INT == 19){
-        	setStatusBarColor("#673ab7");
+        	setStatusBarColor("#512da8");
         }
 		Intent intent = getIntent();
 		getActionBar().setTitle(intent.getStringExtra("country"));
@@ -88,6 +88,9 @@ public class Details extends UIConfig {
             // create marker
             MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title(intent.getStringExtra("country"));
             googleMap.getUiSettings().setZoomGesturesEnabled(true);
+            googleMap.getUiSettings().setRotateGesturesEnabled(true);
+            googleMap.getUiSettings().setScrollGesturesEnabled(true);
+            googleMap.getUiSettings().setTiltGesturesEnabled(true);
             // adding marker
             googleMap.addMarker(marker).showInfoWindow();
             CameraPosition cameraPosition = new CameraPosition.Builder().target(
