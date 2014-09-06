@@ -19,6 +19,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -361,6 +364,13 @@ public class MainActivity extends UIConfig {
     			HttpGet request = new HttpGet(URL + dict.get(getSelection)+encodedString);
     			request.addHeader("X-Mashape-Key","vaIqEmArX9mshVokSbs1RySugavkp16yAv6jsnbMp67ktpm97r");
     			// make GET request to the given URL
+    			
+    			HttpParams httpParameters = new BasicHttpParams();
+    			int timeoutConnection = 5000;
+    			HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+    			int timeoutSocket = 5000;
+    			HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+    			request.setParams(httpParameters);
     			
     			HttpResponse response = httpclient.execute(request);
 
