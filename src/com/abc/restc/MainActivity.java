@@ -331,10 +331,11 @@ public class MainActivity extends UIConfig {
 				}
 				
 				String nativeName = String.valueOf(ifNull(jsonObject.getString("nativeName")));
+				String alpha2Code = String.valueOf(ifNull(jsonObject.getString("alpha2Code")));
 				DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 				db.addCountry(new Country(name,capital,region,subregion,population,lat,
 			lng,area,timezones,borders,nativeName,callingCodes,
-			currencies,languages));
+			currencies,languages,alpha2Code));
 				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block

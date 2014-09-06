@@ -29,6 +29,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String lat = "lat";
     private static final String lng = "lng";
     private static final String area = "area";
+    private static final String alpha2Code = "alpha2Code";
     private static final String timezones = "timezones";
     private static final String borders = "borders";
     private static final String nativeName = "nativeName";
@@ -57,7 +58,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + nativeName + " TEXT,"
                 + callingCodes + " TEXT,"
                 + currencies + " TEXT,"
-                + languages + " TEXT"+")";
+                + languages + " TEXT,"
+                + alpha2Code + " REAL"+")";
         db.execSQL(CREATE_COUNTRY_TABLE);
     }
  
@@ -88,7 +90,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	values.put(callingCodes, country.callingCodes);
     	values.put(currencies, country.getCurrencies());
     	values.put(languages, country.getLanguages());
-    	
+    	values.put(alpha2Code, country.getalpha2Code());
     	db.insert(TABLE_COUNTRY, null, values);
     	db.close();
     }
@@ -125,6 +127,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             	country.setcallingCodes(cursor.getString(11));
             	country.setCurrencies(cursor.getString(12));
             	country.setLanguages(cursor.getString(13));
+            	country.setalpha2Code(cursor.getString(14));
                 // Adding contact to list
                 countryList.add(country);
             } while (cursor.moveToNext());

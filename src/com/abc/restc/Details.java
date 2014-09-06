@@ -1,5 +1,8 @@
 package com.abc.restc;
 
+
+import java.io.InputStream;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -10,8 +13,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -80,6 +86,7 @@ public class Details extends UIConfig {
 	private void initialize(Intent intent) {
 		DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 		List<Country> obj = db.getCountry(intent.getStringExtra("country"));
+		new fetchImage().execute("http://www.geonames.org/flags/x/"+obj.get(0).alpha2Code.toLowerCase()+".gif");
         if (googleMap == null) {
             googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
             double latitude =obj.get(0).lat ;
@@ -103,6 +110,7 @@ public class Details extends UIConfig {
                 showToast("Sorry! unable to create maps");
             }
         }
+        
         Typeface fontLight = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Light.ttf");
         DecimalFormat numFormat;
         
@@ -152,7 +160,7 @@ public class Details extends UIConfig {
         languages.setText(obj.get(0).languages);
         languages.setTypeface(fontLight);
     }
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -164,4 +172,25 @@ public class Details extends UIConfig {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	class fetchImage extends AsyncTask<String, Void, Drawable> {
+
+        String result="";
+    	InputStream inputStream = null;
+    	@Override
+        protected Drawable doInBackground(String... q) {
+        	try {
+    	    	URL is = new URL(q[0]);
+    	        Drawable d = Drawable.createFromStream(is.openStream(), "src");
+    	        return d;
+    	    } catch (Exception e) {
+    	        return null;
+    	    }
+        }
+
+        protected void onPostExecute(Drawable feed) {
+        	ActionBar actionBar = getActionBar();
+        	actionBar.setIcon(feed);
+        }
+    }
 }

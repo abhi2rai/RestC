@@ -16,6 +16,7 @@ public class Country {
 	String callingCodes;
 	String currencies;
 	String languages;
+	String alpha2Code;
 	
 	public Country(){
 		
@@ -23,7 +24,7 @@ public class Country {
 	
 	public Country(String name,String capital,String region,String subregion,double population,double lat,
 			double lng,double area,String timezones,String borders,String nativeName,String callingCodes,
-			String currencies,String languages){
+			String currencies,String languages,String alpha2Code){
 		this.name = name;
 		this.capital = capital;
 		this.region = region;
@@ -38,6 +39,7 @@ public class Country {
 		this.callingCodes = callingCodes;
 		this.currencies = currencies;
 		this.languages = languages;
+		this.alpha2Code = alpha2Code;
 	}
 	public String getName(){
 		return this.name;
@@ -80,6 +82,9 @@ public class Country {
 	}
 	public String getLanguages(){
 		return this.languages;
+	}
+	public String getalpha2Code(){
+		return this.alpha2Code;
 	}
 	
 	//set functions
@@ -125,5 +130,8 @@ public class Country {
 	}
 	public void setLanguages(String languages){
 		this.languages = languages;
+	}
+	public void setalpha2Code(String alpha2Code){
+		this.alpha2Code = alpha2Code;
 	}
 }
